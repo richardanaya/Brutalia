@@ -1837,7 +1837,7 @@
 
 
     /**
-     * The width of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
+     * The width of the backgroundObjectContainer, setting this will actually modify the scale to achieve the value set
      *
      * @property width
      * @type Number
@@ -1865,7 +1865,7 @@
     });
 
     /**
-     * The height of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
+     * The height of the backgroundObjectContainer, setting this will actually modify the scale to achieve the value set
      *
      * @property height
      * @type Number
@@ -2104,7 +2104,7 @@
     PIXI.DisplayObjectContainer.prototype.displayObjectContainerUpdateTransform = PIXI.DisplayObjectContainer.prototype.updateTransform;
 
     /**
-     * Retrieves the bounds of the displayObjectContainer as a rectangle. The bounds calculation takes all visible children into consideration.
+     * Retrieves the bounds of the backgroundObjectContainer as a rectangle. The bounds calculation takes all visible children into consideration.
      *
      * @method getBounds
      * @return {Rectangle} The rectangular bounding area
@@ -2164,7 +2164,7 @@
     };
 
     /**
-     * Retrieves the non-global local bounds of the displayObjectContainer as a rectangle. The calculation takes all visible children into consideration.
+     * Retrieves the non-global local bounds of the backgroundObjectContainer as a rectangle. The calculation takes all visible children into consideration.
      *
      * @method getLocalBounds
      * @return {Rectangle} The rectangular bounding area

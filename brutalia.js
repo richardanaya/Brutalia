@@ -15,7 +15,7 @@ loader.load();
 
 
 // create an new instance of a pixi stage
-var stage = new PIXI.Stage(0x666666, true);
+var stage = new PIXI.Stage(0x666666, false);
 
 // create a renderer instance
 var renderer = new PIXI.WebGLRenderer(window.innerWidth, window.innerHeight);
@@ -48,26 +48,40 @@ var pondFloorTexture = PIXI.Texture.fromImage("sprites/concrete_normal.png");
 var filter = new PIXI.NormalMapFilter(pondFloorTexture);
 
 var player = null;
+var backgroundSprites = [];
+var playerYVelocity;
+var gravity;
+var cameraMovementManager;
+var backgroundObjectContainer;
+function initPlayer(){
+	player = new PIXI.Spine("sprites/infiltrator/skeleton.anim");
+	
+	player.jump = function(){
+		player.state.setAnimationByName(0, "jump", true);
+		playerYVelocity = 10;
+		player.isJumping = true;
+	};
+	
+	player.position.x = window.innerWidth/2;
+	player.position.y = 600;
+
+	player.scale.x = player.scale.y = .15;
+	//spineBoy.anchor = new PIXI.Point(.5,.5);
+	// set up the mixes!
+	player.stateData.setMixByName("run", "jump", 0.2);
+	player.stateData.setMixByName("jump", "run", 0.2);
+	player.state.setAnimationByName(0, "run", true);
+};
 
 function onAssetsLoaded()
 {
-    player = new PIXI.Spine("sprites/infiltrator/skeleton.anim");
-
-    player.position.x = window.innerWidth/2;
-    player.position.y = 600;
-
-    player.scale.x = player.scale.y = .15;
-    //spineBoy.anchor = new PIXI.Point(.5,.5);
-    // set up the mixes!
-    player.stateData.setMixByName("run", "jump", 0.2);
-    player.stateData.setMixByName("jump", "run", 0.4);
-
-    player.state.setAnimationByName(0,"run", true);
-
+	initPlayer();
+	backgroundObjectContainer = new PIXI.DisplayObjectContainer();
+	cameraMovementManager = new CameraMovementManager(player, backgroundObjectContainer);
     // create a texture from an image path
     var brutalism_sky = PIXI.Texture.fromImage("sprites/brutalism_sky.png");
 
-    for(var i = 0 ; i < 5; i++){
+    for(var i = 0 ; i < 10; i++){
         // create a new Sprite using the texture
         var background = new PIXI.Sprite(brutalism_sky);
         // center the sprites anchor point
@@ -77,53 +91,61 @@ function onAssetsLoaded()
         // move the sprite t the center of the screen
         background.position.x = i*512;
         background.position.y = 0;
-        stage.addChild(background);
+	    backgroundObjectContainer.addChild(background)
+	    backgroundSprites.push(background);
     }
 
     var city_stencil = PIXI.Texture.fromImage("sprites/city_stencil.png");
 
-    for(var i = 0 ; i < 5; i++) {
+    for(var i = 0 ; i < 10; i++) {
         var city_near = new PIXI.Sprite(city_stencil);
+	    // I think TilingSprites may be a long term solution for parallax awesomeness
+	    /*var city_near = new PIXI.TilingSprite(
+		    city_stencil, 
+		    city_stencil.baseTexture.width, 
+		    city_stencil.baseTexture.height
+	    );*/
+	    
         city_near.position.x = -300+768*i;
         city_near.position.y = 64;
         city_near.anchor.x = 0;
         city_near.anchor.y = 0;
-        stage.addChild(city_near);
+	    backgroundObjectContainer.addChild(city_near);
         city_near.tint = 0x666666;
+	    backgroundSprites.push(city_near);
     }
 
-    for(var i = 0 ; i < 5; i++) {
+    for(var i = 0 ; i < 10; i++) {
         var city_near = new PIXI.Sprite(city_stencil);
         city_near.position.x = 768*i;
         city_near.position.y = 128;
         city_near.anchor.x = 0;
         city_near.anchor.y = 0;
-        stage.addChild(city_near);
+	    backgroundObjectContainer.addChild(city_near);
         city_near.tint = 0x333333;
+	    backgroundSprites.push(city_near);
     }
 
 
-
-
-
+	gravity = 1;
+	playerYVelocity = 0;
 
 
     var sprite = PIXI.Sprite.fromImage("sprites/concrete.png");//(pondFloorTexture);
     sprite.position.y = 600;
     sprite.filters = [filter];
-    stage.addChild(sprite);
-
-    stage.addChild(player);
-
+	stage.addChild(backgroundObjectContainer);
+	stage.addChild(sprite);
+	stage.addChild(player);
     /*stage.click = function()
     {
-        player.state.setAnimationByName(0,"jump", false);
-        player.state.addAnimationByName(0,"run", true);
-
+	    playerYVelocity = 23;
+	    player.state.setAnimationByName(0, "jump", false);
+	    player.state.addAnimationByName(0,"run", true);
     }*/
 }
 
-requestAnimFrame(animate);
+requestAnimFrame(update);
 
 function animate() {
     if(player != null){
@@ -133,6 +155,13 @@ function animate() {
         if(Key.isDown(Key.RIGHT)){
             player.position.x += 5;
         }
+
+	    if(Key.isDown(Key.UP)){
+		    if(!player.isJumping) {
+			    player.jump();
+		    }
+	    }
+	    
         filter.uniforms.LightPos.value[0] = player.position.x;
         filter.uniforms.LightPos.value[1] = player.position.y;
     }
@@ -142,9 +171,30 @@ function animate() {
     }
 
     //console.log( mouse.global.x );
-
-    // time to render the state!
-
-    requestAnimFrame( animate );
-    renderer.render(stage);
 }
+
+function update(){
+	animate();
+	// time to render the state!
+	renderer.render(stage);
+	requestAnimFrame( update );
+	
+	if(player && player.isJumping){
+		// hack for now just to test some stuff :)
+		var newPlayerY = player.position.y - playerYVelocity;
+		if(newPlayerY > 600){
+			player.position.y = 600;
+			player.isJumping = false;
+			playerYVelocity = 0;
+			player.state.setAnimationByName(0, "run", true);
+			return;
+		}
+		
+		player.position.y = newPlayerY;
+		playerYVelocity -= gravity;
+	}
+	
+	if(cameraMovementManager) {
+		cameraMovementManager.update();
+	}
+};
