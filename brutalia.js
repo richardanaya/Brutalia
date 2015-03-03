@@ -18,7 +18,7 @@ loader.load();
 var stage = new PIXI.Stage(0x666666, true);
 
 // create a renderer instance
-var renderer = new PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+var renderer = new PIXI.WebGLRenderer(window.innerWidth, window.innerHeight);
 
 // set the canvas width and height to fill the screen
 renderer.view.style.display = "block";
@@ -48,21 +48,60 @@ function onAssetsLoaded()
     spineBoy.position.x = window.innerWidth/2;
     spineBoy.position.y = window.innerHeight/2;
 
-    spineBoy.scale.x = spineBoy.scale.y = .1;
+    spineBoy.scale.x = spineBoy.scale.y = .15;
     //spineBoy.anchor = new PIXI.Point(.5,.5);
     // set up the mixes!
     spineBoy.stateData.setMixByName("run", "jump", 0.2);
     spineBoy.stateData.setMixByName("jump", "run", 0.4);
 
-    spineBoy.state.setAnimationByName("run", true);
+    spineBoy.state.setAnimationByName(0,"run", true);
+
+    // create a texture from an image path
+    var brutalism_sky = PIXI.Texture.fromImage("sprites/brutalism_sky.png");
+
+    for(var i = 0 ; i < 5; i++){
+        // create a new Sprite using the texture
+        var background = new PIXI.Sprite(brutalism_sky);
+        // center the sprites anchor point
+        background.anchor.x = 0;
+        background.anchor.y = 0;
+
+        // move the sprite t the center of the screen
+        background.position.x = i*512;
+        background.position.y = 0;
+        stage.addChild(background);
+    }
+
+    var city_stencil = PIXI.Texture.fromImage("sprites/city_stencil.png");
+
+    for(var i = 0 ; i < 5; i++) {
+        var city_near = new PIXI.Sprite(city_stencil);
+        city_near.position.x = -300+768*i;
+        city_near.position.y = 64;
+        city_near.anchor.x = 0;
+        city_near.anchor.y = 0;
+        stage.addChild(city_near);
+        city_near.tint = 0x666666;
+    }
+
+    for(var i = 0 ; i < 5; i++) {
+        var city_near = new PIXI.Sprite(city_stencil);
+        city_near.position.x = 768*i;
+        city_near.position.y = 128;
+        city_near.anchor.x = 0;
+        city_near.anchor.y = 0;
+        stage.addChild(city_near);
+        city_near.tint = 0x333333;
+    }
+
 
 
     stage.addChild(spineBoy);
 
     stage.click = function()
     {
-        spineBoy.state.setAnimationByName("jump", false);
-        spineBoy.state.addAnimationByName("run", true);
+        spineBoy.state.setAnimationByName(0,"jump", false);
+        spineBoy.state.addAnimationByName(0,"run", true);
 
     }
 }
