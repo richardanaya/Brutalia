@@ -1,0 +1,104 @@
+
+skeleton.png
+size: 1024,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+inf_belly
+  rotate: false
+  xy: 771, 21
+  size: 106, 63
+  orig: 106, 63
+  offset: 0, 0
+  index: -1
+inf_foot
+  rotate: false
+  xy: 879, 6
+  size: 88, 73
+  orig: 88, 73
+  offset: 0, 0
+  index: -1
+inf_gun
+  rotate: false
+  xy: 203, 148
+  size: 300, 106
+  orig: 300, 106
+  offset: 0, 0
+  index: -1
+inf_head
+  rotate: true
+  xy: 647, 11
+  size: 150, 122
+  orig: 150, 122
+  offset: 0, 0
+  index: -1
+inf_leg
+  rotate: true
+  xy: 444, 30
+  size: 116, 201
+  orig: 116, 201
+  offset: 0, 0
+  index: -1
+inf_lhand
+  rotate: true
+  xy: 203, 2
+  size: 29, 84
+  orig: 29, 84
+  offset: 0, 0
+  index: -1
+inf_lowerarm
+  rotate: true
+  xy: 771, 86
+  size: 75, 99
+  orig: 75, 99
+  offset: 0, 0
+  index: -1
+inf_lupperarm
+  rotate: true
+  xy: 505, 163
+  size: 91, 183
+  orig: 91, 183
+  offset: 0, 0
+  index: -1
+inf_neck
+  rotate: true
+  xy: 959, 81
+  size: 75, 55
+  orig: 75, 55
+  offset: 0, 0
+  index: -1
+inf_pelvis
+  rotate: false
+  xy: 875, 158
+  size: 131, 96
+  orig: 131, 96
+  offset: 0, 0
+  index: -1
+inf_rhand
+  rotate: true
+  xy: 872, 90
+  size: 66, 85
+  orig: 66, 85
+  offset: 0, 0
+  index: -1
+inf_thigh
+  rotate: true
+  xy: 203, 33
+  size: 113, 239
+  orig: 113, 239
+  offset: 0, 0
+  index: -1
+inf_torso
+  rotate: true
+  xy: 2, 30
+  size: 224, 199
+  orig: 224, 199
+  offset: 0, 0
+  index: -1
+inf_upperarm
+  rotate: true
+  xy: 690, 163
+  size: 91, 183
+  orig: 91, 183
+  offset: 0, 0
+  index: -1
