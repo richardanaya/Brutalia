@@ -46,10 +46,10 @@ function onAssetsLoaded()
     var spineBoy = new PIXI.Spine("sprites/infiltrator/skeleton.anim");
 
     spineBoy.position.x = window.innerWidth/2;
-    //spineBoy.position.y = -window.innerHeight/2;
+    spineBoy.position.y = window.innerHeight/2;
 
-    spineBoy.scale.x = spineBoy.scale.y = 1;
-    spineBoy.anchor =
+    spineBoy.scale.x = spineBoy.scale.y = .1;
+    //spineBoy.anchor = new PIXI.Point(.5,.5);
     // set up the mixes!
     spineBoy.stateData.setMixByName("run", "jump", 0.2);
     spineBoy.stateData.setMixByName("jump", "run", 0.4);

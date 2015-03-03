@@ -5970,7 +5970,13 @@
                         for (var i = 0, n = values.length; i < n; i++) {
                             var valueMap = values[i];
                             var x = (valueMap["x"] || 0) * timelineScale;
-                            var y = (valueMap["y"] || 0) * timelineScale;
+                            if(timelineName == "translate" && boneIndex == 0){
+                                var y = (-valueMap["y"] || 0) * timelineScale;
+                            }
+                            else {
+                                var y = (valueMap["y"] || 0) * timelineScale;
+                            }
+
                             timeline.setFrame(frameIndex, valueMap["time"], x, y);
                             spine.SkeletonJson.readCurve(timeline, frameIndex, valueMap);
                             frameIndex++;
