@@ -41,20 +41,28 @@ PIXI.TextureCache["inf_upperarm"] = PIXI.Texture.fromImage("sprites/infiltrator/
 PIXI.TextureCache["inf_lupperarm"] = PIXI.Texture.fromImage("sprites/infiltrator/inf_lupperarm.png");
 
 
+// create a background texture
+var pondFloorTexture = PIXI.Texture.fromImage("sprites/concrete_normal.png");
+
+
+var filter = new PIXI.NormalMapFilter(pondFloorTexture);
+
+var player = null;
+
 function onAssetsLoaded()
 {
-    var spineBoy = new PIXI.Spine("sprites/infiltrator/skeleton.anim");
+    player = new PIXI.Spine("sprites/infiltrator/skeleton.anim");
 
-    spineBoy.position.x = window.innerWidth/2;
-    spineBoy.position.y = window.innerHeight/2;
+    player.position.x = window.innerWidth/2;
+    player.position.y = 600;
 
-    spineBoy.scale.x = spineBoy.scale.y = .15;
+    player.scale.x = player.scale.y = .15;
     //spineBoy.anchor = new PIXI.Point(.5,.5);
     // set up the mixes!
-    spineBoy.stateData.setMixByName("run", "jump", 0.2);
-    spineBoy.stateData.setMixByName("jump", "run", 0.4);
+    player.stateData.setMixByName("run", "jump", 0.2);
+    player.stateData.setMixByName("jump", "run", 0.4);
 
-    spineBoy.state.setAnimationByName(0,"run", true);
+    player.state.setAnimationByName(0,"run", true);
 
     // create a texture from an image path
     var brutalism_sky = PIXI.Texture.fromImage("sprites/brutalism_sky.png");
@@ -96,19 +104,46 @@ function onAssetsLoaded()
 
 
 
-    stage.addChild(spineBoy);
 
-    stage.click = function()
+
+
+
+    var sprite = PIXI.Sprite.fromImage("sprites/concrete.png");//(pondFloorTexture);
+    sprite.position.y = 600;
+    sprite.filters = [filter];
+    stage.addChild(sprite);
+
+    stage.addChild(player);
+
+    /*stage.click = function()
     {
-        spineBoy.state.setAnimationByName(0,"jump", false);
-        spineBoy.state.addAnimationByName(0,"run", true);
+        player.state.setAnimationByName(0,"jump", false);
+        player.state.addAnimationByName(0,"run", true);
 
-    }
+    }*/
 }
 
 requestAnimFrame(animate);
 
 function animate() {
+    if(player != null){
+        if(Key.isDown(Key.LEFT)){
+            player.position.x -= 5;
+        }
+        if(Key.isDown(Key.RIGHT)){
+            player.position.x += 5;
+        }
+        filter.uniforms.LightPos.value[0] = player.position.x;
+        filter.uniforms.LightPos.value[1] = player.position.y;
+    }
+    else {
+        filter.uniforms.LightPos.value[0] = -1000;
+        filter.uniforms.LightPos.value[1] = -1000;
+    }
+
+    //console.log( mouse.global.x );
+
+    // time to render the state!
 
     requestAnimFrame( animate );
     renderer.render(stage);
