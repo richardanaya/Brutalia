@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="isometric" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="Building" tilewidth="128" tileheight="128">
+  <tile id="0">
+   <image width="96" height="128" source="level/big.png"/>
+  </tile>
+  <tile id="1">
+   <image width="128" height="32" source="level/floor.png"/>
+  </tile>
+  <tile id="2">
+   <image width="32" height="128" source="level/pillar.png"/>
+  </tile>
+  <tile id="3">
+   <image width="32" height="32" source="level/ramp.png"/>
+  </tile>
+  <tile id="4">
+   <image width="32" height="32" source="level/ramp_down.png"/>
+  </tile>
+  <tile id="5">
+   <image width="64" height="32" source="level/slowramp.png"/>
+  </tile>
+  <tile id="6">
+   <image width="64" height="32" source="level/slowramp_down.png"/>
+  </tile>
+  <tile id="7">
+   <image width="128" height="128" source="level/spire.png"/>
+  </tile>
+  <tile id="8">
+   <image width="96" height="128" source="level/topper.png"/>
+  </tile>
+ </tileset>
+ <layer name="Tile Layer 1" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt1rEJACAMBEC1c/+FraysBIlK7hZIEPxPKTFa0Bx4Qb+9AMfV2wsk4I1hNf+FOwr4mY6Poy9gn4wiI33xDxkFvExGAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJDBAFneABk=
+  </data>
+ </layer>
+</map>
