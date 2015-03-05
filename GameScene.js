@@ -65,6 +65,7 @@ function initPlayer(){
     player.state.setAnimationByName(0, "stand", true);
     player.facingRight = true;
     player.isMoving = false;
+	player.speed = 2;
 };
 
 function animate() {
@@ -72,27 +73,25 @@ function animate() {
     if (player != null) {
         remove(player.states, STATES.MOVING);
         if (Key.isDown(Key.LEFT) && !contains(player.states, STATES.MOVING)) {
-            player.states.push(STATES.MOVING);
+	        player.states.push(STATES.MOVING);
             if (player.facingRight) {
-                // eventually should probably have player.pivot always be the center of image,
-                // currently we use 0,0 as player pivot
-                player.pivot.x = .5;
                 player.scale.x = -player.scale.x;
-                player.pivot.x = 0;
                 player.facingRight = false;
             }
-            player.position.x -= 2;
+	        if(!cameraMovementManager.cameraIsMoving) {
+		        player.position.x -= player.speed;
+	        }
         }
 
         if (Key.isDown(Key.RIGHT) && !contains(player.states, STATES.MOVING)) {
             player.states.push(STATES.MOVING);
             if (!player.facingRight) {
-                player.pivot.x = .5;
                 player.scale.x = -player.scale.x;
-                player.pivot.x = 0;
                 player.facingRight = true;
             }
-            player.position.x += 2;
+	        if(!cameraMovementManager.cameraIsMoving) {
+		        player.position.x += player.speed;
+	        }
         }
 
         if (!contains(player.states, STATES.MOVING) && contains(player.states, STATES.RUN) && !contains(player.states, STATES.JUMP)) {
@@ -122,11 +121,10 @@ function animate() {
 GameScene.prototype.load = function(){
     filter = new PIXI.NormalMapFilter(PIXI.TextureCache["concrete_normal"]);
     initPlayer();
-    backgroundObjectContainer = new PIXI.DisplayObjectContainer();
 	parallaxLayerContainer0 = new ParallaxLayer(.1);
 	parallaxLayerContainer1 = new ParallaxLayer(0.75);
-	groundLayerContainer = new ParallaxLayer(2);
-    cameraMovementManager = new CameraMovementManager(player, backgroundObjectContainer);
+	groundLayerContainer = new ParallaxLayer(2, filter);
+    cameraMovementManager = new CameraMoveManager(player);
     // create a texture from an image path
     var brutalism_sky = PIXI.Texture.fromImage("sprites/brutalism_sky.png");
 
@@ -226,7 +224,7 @@ GameScene.prototype.update = function(){
     if(cameraMovementManager) {
         cameraMovementManager.update();
     }
-}
+};
 
 GameScene.prototype.unload = function(){
 
