@@ -113,8 +113,6 @@ function animate() {
 
         filter.uniforms.LightPos.value[0] = player.position.x;
         filter.uniforms.LightPos.value[1] = player.position.y;
-
-
     }
 }
 
@@ -178,7 +176,7 @@ GameScene.prototype.load = function(){
 
 
     var sprite = PIXI.Sprite.fromImage("sprites/concrete.png");//(pondFloorTexture);
-    sprite.position.y = 600;
+    sprite.position.y = 300;
     sprite.filters = [filter];
     stage.addChild(backgroundObjectContainer);
     stage.addChild(sprite);
@@ -197,8 +195,9 @@ GameScene.prototype.update = function(){
     if(player && contains(player.states, STATES.JUMP)){
         // hack for now just to test some stuff :)
         var newPlayerY = player.position.y - playerYVelocity;
-        if(newPlayerY > 600){
-            player.position.y = 600;
+	    console.log(newPlayerY);
+        if(newPlayerY > 300){
+            player.position.y = 300;
             remove(player.states, STATES.JUMP);
             if(contains(player.states, STATES.MOVING)){
                 player.state.setAnimationByName(0, "run", true);
