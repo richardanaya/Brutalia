@@ -9,7 +9,7 @@ function contains(states, state){
 };
 CameraMovementManager = function(player){
 	// temp solution
-	var CAMERA_BUFFER = 120;
+	var CAMERA_BUFFER = 300;
 	var leftWallX = player.position.x - CAMERA_BUFFER;
 	var rightWallX = player.position.x + player.width + CAMERA_BUFFER;
 
@@ -17,8 +17,6 @@ CameraMovementManager = function(player){
 	var groundLayerList = [];
 	var playerLastPosition = new PIXI.Point(player.position.x, player.position.y);
 	var update = function(){
-		console.log(player.position.x );
-		console.log(playerLastPosition );
 		if(contains(player.states, STATES.MOVING)) {
 			if ((contains(player.states, STATES.MOVING) && player.position.x - playerLastPosition.x) > 0) {
 				parallaxLayerList.forEach(function (layer) {
@@ -38,13 +36,15 @@ CameraMovementManager = function(player){
 			leftWallX = player.position.x;
 			rightWallX = player.position.x + player.width + CAMERA_BUFFER;
 			groundLayerList.forEach(function(layer){
-				layer.update();
+				layer.update(false);
 			});
 		}
-		console.log(rightWallX);
 		if(player.position.x + player.width > rightWallX){
 			rightWallX = player.position.x + player.width;
 			leftWallX = player.position.x - CAMERA_BUFFER;
+			groundLayerList.forEach(function(layer){
+				layer.update(true);
+			});
 		}
 		
 		playerLastPosition.x = player.position.x;

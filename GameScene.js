@@ -204,7 +204,6 @@ GameScene.prototype.update = function(){
     if(player && contains(player.states, STATES.JUMP)){
         // hack for now just to test some stuff :)
         var newPlayerY = player.position.y - playerYVelocity;
-	    console.log(newPlayerY);
         if(newPlayerY > 300){
             player.position.y = 300;
             remove(player.states, STATES.JUMP);
