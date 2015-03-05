@@ -51,7 +51,7 @@ function update(){
 };
 
 function changeScene(scene){
-    if(currentScene){
+    if(currentScene) {
         currentScene.unload();
     }
     currentScene = scene;

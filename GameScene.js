@@ -3,20 +3,49 @@ var GameScene = function(){
 }
 
 var filter = null;
+
 var player = null;
 var backgroundSprites = [];
 var playerYVelocity;
 var gravity;
 var cameraMovementManager;
 var backgroundObjectContainer;
+// testing some stuff
+var STATES = {
+    RUN: "RUN",
+    JUMP: "JUMP",
+    STAND: "STAND",
+    MOVING: "MOVING"
+};
+
+function contains(states, state){
+    for(var i = 0; i < states.length; i++){
+        if(states[i] === state){
+            return true;
+        }
+    }
+    return false;
+};
+
+function remove(states, state) {
+    for(var i = 0; i < states.length; i++){
+        if(states[i] === state){
+            states.splice(i, 1);
+            return;
+        }
+    }
+};
 
 function initPlayer(){
     player = new PIXI.Spine("sprites/infiltrator/skeleton.anim");
+    player.states = [STATES.STAND];
 
     player.jump = function(){
         player.state.setAnimationByName(0, "jump", true);
         playerYVelocity = 10;
-        player.isJumping = true;
+        player.states.push(STATES.JUMP);
+        remove(player.states, STATES.RUN);
+        remove(player.states, STATES.STAND);
     };
 
     player.position.x = GAME_WIDTH/2;
@@ -26,36 +55,69 @@ function initPlayer(){
     //spineBoy.anchor = new PIXI.Point(.5,.5);
     // set up the mixes!
     player.stateData.setMixByName("run", "jump", 0.2);
-    player.stateData.setMixByName("jump", "run", 0.2);
-    player.state.setAnimationByName(0, "run", true);
+    player.stateData.setMixByName("jump", "run", 0.1);
+    player.stateData.setMixByName("run", "stand", .1);
+    player.stateData.setMixByName("stand", "run", 0.2);
+    player.stateData.setMixByName("jump", "stand", 0.1);
+    player.stateData.setMixByName("stand", "jump", 0.2)
+    player.state.setAnimationByName(0, "stand", true);
+    player.facingRight = true;
+    player.isMoving = false;
 };
 
-
 function animate() {
-    if(player != null){
-        if(Key.isDown(Key.LEFT)){
+
+    if (player != null) {
+        remove(player.states, STATES.MOVING);
+        if (Key.isDown(Key.LEFT) && !contains(player.states, STATES.MOVING)) {
+            player.states.push(STATES.MOVING);
+            if (player.facingRight) {
+                // eventually should probably have player.pivot always be the center of image,
+                // currently we use 0,0 as player pivot
+                player.pivot.x = .5;
+                player.scale.x = -player.scale.x;
+                player.pivot.x = 0;
+                player.facingRight = false;
+            }
             player.position.x -= 5;
         }
-        if(Key.isDown(Key.RIGHT)){
+
+        if (Key.isDown(Key.RIGHT) && !contains(player.states, STATES.MOVING)) {
+            player.states.push(STATES.MOVING);
+            if (!player.facingRight) {
+                player.pivot.x = .5;
+                player.scale.x = -player.scale.x;
+                player.pivot.x = 0;
+                player.facingRight = true;
+            }
             player.position.x += 5;
         }
 
-        if(Key.isDown(Key.UP)){
-            if(!player.isJumping) {
+        if (!contains(player.states, STATES.MOVING) && contains(player.states, STATES.RUN) && !contains(player.states, STATES.JUMP)) {
+            player.state.setAnimationByName(0, "stand", true);
+            remove(player.states, STATES.RUN);
+            player.states.push(STATES.STAND);
+        }
+
+        if (contains(player.states, STATES.MOVING) && !contains(player.states, STATES.RUN)) {
+            player.state.setAnimationByName(0, "run", true);
+            remove(player.states, STATES.STAND);
+            player.states.push(STATES.RUN);
+        }
+
+        if (Key.isDown(Key.UP)) {
+            if (!contains(player.states, STATES.JUMP)) {
                 player.jump();
             }
         }
 
         filter.uniforms.LightPos.value[0] = player.position.x;
         filter.uniforms.LightPos.value[1] = player.position.y;
-    }
-    else {
-        filter.uniforms.LightPos.value[0] = -1000;
-        filter.uniforms.LightPos.value[1] = -1000;
-    }
 
-    //console.log( mouse.global.x );
+
+    }
 }
+
 
 GameScene.prototype.load = function(){
     filter = new PIXI.NormalMapFilter(PIXI.TextureCache["concrete_normal"]);
@@ -65,7 +127,7 @@ GameScene.prototype.load = function(){
     // create a texture from an image path
     var brutalism_sky = PIXI.Texture.fromImage("sprites/brutalism_sky.png");
 
-    for(var i = 0 ; i < 3; i++){
+    for(var i = 0 ; i < 10; i++){
         // create a new Sprite using the texture
         var background = new PIXI.Sprite(brutalism_sky);
         // center the sprites anchor point
@@ -75,7 +137,7 @@ GameScene.prototype.load = function(){
         // move the sprite t the center of the screen
         background.position.x = i*400;
         background.position.y = 0;
-        backgroundObjectContainer.addChild(background)
+        backgroundObjectContainer.addChild(background);
         backgroundSprites.push(background);
     }
 
@@ -133,14 +195,22 @@ GameScene.prototype.update = function(){
     animate();
     // time to render the state!
     renderer.render(stage);
-    if(player && player.isJumping){
+
+    if(player && contains(player.states, STATES.JUMP)){
         // hack for now just to test some stuff :)
         var newPlayerY = player.position.y - playerYVelocity;
         if(newPlayerY > 600){
             player.position.y = 600;
-            player.isJumping = false;
+            remove(player.states, STATES.JUMP);
+            if(contains(player.states, STATES.MOVING)){
+                player.state.setAnimationByName(0, "run", true);
+                player.states.push(STATES.RUN);
+            }
+            else{
+                player.state.setAnimationByName(0, "stand", true);
+                player.states.push(STATES.STAND);
+            }
             playerYVelocity = 0;
-            player.state.setAnimationByName(0, "run", true);
             return;
         }
 
