@@ -92,4 +92,8 @@ IntroScene.prototype.update = function(){
 IntroScene.prototype.unload = function(){
     stage.removeChild(this.background);
     stage.removeChild(this.background2);
+    stage.removeChild(this.background3);
+    stage.removeChild(this.background4);
+    stage.removeChild(this.logo);
+    stage.removeChild(this.pressSpace);
 }
