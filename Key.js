@@ -16,6 +16,15 @@ var Key = {
 
     onKeyup: function(event) {
         delete this._pressed[event.keyCode];
+    },
+
+    isAnyKeyDown: function(event) {
+        for(var i in this._pressed){
+            if(this._pressed[i]){
+                return true;
+            }
+        }
+        return false;
     }
 };
 
