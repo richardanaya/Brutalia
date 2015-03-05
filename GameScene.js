@@ -193,8 +193,6 @@ GameScene.prototype.load = function(){
 
 GameScene.prototype.update = function(){
     animate();
-    // time to render the state!
-    renderer.render(stage);
 
     if(player && contains(player.states, STATES.JUMP)){
         // hack for now just to test some stuff :)

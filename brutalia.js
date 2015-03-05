@@ -48,6 +48,8 @@ function onAssetsLoaded()
 function update(){
     currentScene.update(1/60.0);
     requestAnimFrame(update);
+    TWEEN.update();
+    renderer.render(stage);
 };
 
 function changeScene(scene){
