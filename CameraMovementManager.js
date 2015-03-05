@@ -1,28 +1,67 @@
 // TODO: add top and bottom walls as well for inital implementation then we can get fancy :)
-CameraMovementManager = function(player, backgroundObjectContainer){
+function contains(states, state){
+	for(var i = 0; i < states.length; i++){
+		if(states[i] === state){
+			return true;
+		}
+	}
+	return false;
+};
+CameraMovementManager = function(player){
 	// temp solution
 	var CAMERA_BUFFER = 120;
 	var leftWallX = player.position.x - CAMERA_BUFFER;
 	var rightWallX = player.position.x + player.width + CAMERA_BUFFER;
-	var backgroundContainer = backgroundObjectContainer;
 
+	var parallaxLayerList = [];
+	var groundLayerList = [];
+	var playerLastPosition = new PIXI.Point(player.position.x, player.position.y);
 	var update = function(){
+		console.log(player.position.x );
+		console.log(playerLastPosition );
+		if(contains(player.states, STATES.MOVING)) {
+			if ((contains(player.states, STATES.MOVING) && player.position.x - playerLastPosition.x) > 0) {
+				parallaxLayerList.forEach(function (layer) {
+					layer.update(true);
+				});
+
+			}
+			if (player.position.x - playerLastPosition.x < 0) {
+				parallaxLayerList.forEach(function (layer) {
+					layer.update(false);
+				});
+			}
+		}
 		// TODO: do some approximations on this and the next check because the sprite is constantly updating its x position while
 		// animating and it can cause jerky movement even though the player is not moving
 		if(player.position.x < leftWallX){
 			leftWallX = player.position.x;
 			rightWallX = player.position.x + player.width + CAMERA_BUFFER;
-			backgroundContainer.position.x += 2.5;
+			groundLayerList.forEach(function(layer){
+				layer.update();
+			});
 		}
-			
+		console.log(rightWallX);
 		if(player.position.x + player.width > rightWallX){
 			rightWallX = player.position.x + player.width;
 			leftWallX = player.position.x - CAMERA_BUFFER;
-			backgroundContainer.position.x -= 2.5;
 		}
+		
+		playerLastPosition.x = player.position.x;
+		playerLastPosition.y = player.position.y;
+	};
+	
+	var addParallaxLayer = function(layer){
+		parallaxLayerList.push(layer);
+	};
+	
+	var addGroundLayer = function(layer){
+		groundLayerList.push(layer);
 	};
 	
 	return {
-		update: update
+		update: update,
+		addParallaxLayer: addParallaxLayer,
+		addGroundLayer: addGroundLayer
 	}
 };

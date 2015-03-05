@@ -5,12 +5,14 @@ var GameScene = function(){
 var filter = null;
 
 var player = null;
-var backgroundSprites = [];
 var playerYVelocity;
 var gravity;
 var cameraMovementManager;
 var backgroundObjectContainer;
-// testing some stuff
+var parallaxLayerContainer0;
+var parallaxLayerContainer1;
+var groundLayerContainer;
+
 var STATES = {
     RUN: "RUN",
     JUMP: "JUMP",
@@ -79,7 +81,7 @@ function animate() {
                 player.pivot.x = 0;
                 player.facingRight = false;
             }
-            player.position.x -= 5;
+            player.position.x -= 2;
         }
 
         if (Key.isDown(Key.RIGHT) && !contains(player.states, STATES.MOVING)) {
@@ -90,7 +92,7 @@ function animate() {
                 player.pivot.x = 0;
                 player.facingRight = true;
             }
-            player.position.x += 5;
+            player.position.x += 2;
         }
 
         if (!contains(player.states, STATES.MOVING) && contains(player.states, STATES.RUN) && !contains(player.states, STATES.JUMP)) {
@@ -121,6 +123,9 @@ GameScene.prototype.load = function(){
     filter = new PIXI.NormalMapFilter(PIXI.TextureCache["concrete_normal"]);
     initPlayer();
     backgroundObjectContainer = new PIXI.DisplayObjectContainer();
+	parallaxLayerContainer0 = new ParallaxLayer(.1);
+	parallaxLayerContainer1 = new ParallaxLayer(0.75);
+	groundLayerContainer = new ParallaxLayer(2);
     cameraMovementManager = new CameraMovementManager(player, backgroundObjectContainer);
     // create a texture from an image path
     var brutalism_sky = PIXI.Texture.fromImage("sprites/brutalism_sky.png");
@@ -135,10 +140,13 @@ GameScene.prototype.load = function(){
         // move the sprite t the center of the screen
         background.position.x = i*400;
         background.position.y = 0;
-        backgroundObjectContainer.addChild(background);
-        backgroundSprites.push(background);
+	    
+        stage.addChild(background);
     }
-
+	
+	cameraMovementManager.addParallaxLayer(parallaxLayerContainer0);
+	cameraMovementManager.addParallaxLayer(parallaxLayerContainer1);
+	cameraMovementManager.addGroundLayer(groundLayerContainer);
     var city_stencil = PIXI.Texture.fromImage("sprites/city_stencil.png");
 
     for(var i = 0 ; i < 10; i++) {
@@ -151,23 +159,21 @@ GameScene.prototype.load = function(){
          );*/
 
         city_near.position.x = -300+768*i;
-        city_near.position.y = 64;
+        city_near.position.y = -40;
         city_near.anchor.x = 0;
         city_near.anchor.y = 0;
-        backgroundObjectContainer.addChild(city_near);
+        parallaxLayerContainer0.addChild(city_near);
         city_near.tint = 0x666666;
-        backgroundSprites.push(city_near);
     }
 
     for(var i = 0 ; i < 10; i++) {
         var city_near = new PIXI.Sprite(city_stencil);
         city_near.position.x = 768*i;
-        city_near.position.y = 128;
+        city_near.position.y = -20;
         city_near.anchor.x = 0;
         city_near.anchor.y = 0;
-        backgroundObjectContainer.addChild(city_near);
+        parallaxLayerContainer1.addChild(city_near);
         city_near.tint = 0x333333;
-        backgroundSprites.push(city_near);
     }
 
 
@@ -178,8 +184,11 @@ GameScene.prototype.load = function(){
     var sprite = PIXI.Sprite.fromImage("sprites/concrete.png");//(pondFloorTexture);
     sprite.position.y = 300;
     sprite.filters = [filter];
-    stage.addChild(backgroundObjectContainer);
-    stage.addChild(sprite);
+	groundLayerContainer.addChild(sprite);
+	
+    stage.addChild(parallaxLayerContainer0);
+	stage.addChild(parallaxLayerContainer1);
+    stage.addChild(groundLayerContainer);
     stage.addChild(player);
     /*stage.click = function()
      {
