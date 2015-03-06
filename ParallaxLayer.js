@@ -15,7 +15,6 @@ ParallaxLayer.prototype.update = function(negative) {
 		this.position.x -= this.updateInterval;
 		if(this.filter){
 			this.filter.uniforms.offset.value.x = this.position.x;
-			console.log(this.filter.uniforms.offset.value.x );
 		}
 	}else{
 		this.position.x += this.updateInterval;

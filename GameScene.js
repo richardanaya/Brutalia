@@ -64,7 +64,6 @@ function initPlayer(){
     player.stateData.setMixByName("stand", "jump", 0.2)
     player.state.setAnimationByName(0, "stand", true);
     player.facingRight = true;
-    player.isMoving = false;
 	player.speed = 2;
 };
 
@@ -72,8 +71,10 @@ function animate() {
 
     if (player != null) {
         remove(player.states, STATES.MOVING);
-        if (Key.isDown(Key.LEFT) && !contains(player.states, STATES.MOVING)) {
-	        player.states.push(STATES.MOVING);
+        if (Key.isDown(Key.LEFT)) {
+	        if(!contains(player.states, STATES.MOVING) && !contains(player.states, STATES.JUMP)) {
+		        player.states.push(STATES.MOVING);
+	        }
             if (player.facingRight) {
                 player.scale.x = -player.scale.x;
                 player.facingRight = false;
@@ -83,8 +84,10 @@ function animate() {
 	        }
         }
 
-        if (Key.isDown(Key.RIGHT) && !contains(player.states, STATES.MOVING)) {
-            player.states.push(STATES.MOVING);
+        if (Key.isDown(Key.RIGHT)) {
+	        if(!contains(player.states, STATES.MOVING && !contains(player.states, STATES.JUMP))) {
+		        player.states.push(STATES.MOVING);
+	        }
             if (!player.facingRight) {
                 player.scale.x = -player.scale.x;
                 player.facingRight = true;
@@ -100,7 +103,7 @@ function animate() {
             player.states.push(STATES.STAND);
         }
 
-        if (contains(player.states, STATES.MOVING) && !contains(player.states, STATES.RUN)) {
+        if (contains(player.states, STATES.MOVING) && !contains(player.states, STATES.RUN) && !contains(player.states, STATES.JUMP  )) {
             player.state.setAnimationByName(0, "run", true);
             remove(player.states, STATES.STAND);
             player.states.push(STATES.RUN);
@@ -200,6 +203,8 @@ GameScene.prototype.update = function(){
     animate();
 
     if(player && contains(player.states, STATES.JUMP)){
+//		remove(player.states, STATES.RUN);
+//	    remove(player.states, STATES.MOVING)
         // hack for now just to test some stuff :)
         var newPlayerY = player.position.y - playerYVelocity;
         if(newPlayerY > 300){
